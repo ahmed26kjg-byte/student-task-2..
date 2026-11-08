@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+    <head>
+    <meta charset="UTF-8">
+    <title>نظام إدارة وتحليل نتائج الطلاب</title>
+    <style>
+        body { font-family: Tahoma, sans-serif; padding: 20px; background-color: #f9f9f9; }
+        .box { background: #fff; padding: 15px; margin-bottom: 10px; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        h2 { color: #333; }
+    </style>
+</head>
+<body>
+    <h1>نظام إدارة وتحليل نتائج الطلاب</h1>
+    <div id="output"></div>
+
+    <script>
+        class Student {
+            constructor(id, name, grades, attendance) {
+                this.id = id;
+                this.name = name;
+                this.grades = grades; 
+                this.attendance = attendance; 
+            }
+
+            calculateAverage() {
+                const sum = this.grades.reduce((total, grade) => total + grade, 0);
+                return sum / this.grades.length;
+            }
+
+            getGradeLetter() {
+                const avg = this.calculateAverage();
+                if (avg >= 90) return 'A';
+                if (avg >= 80) return 'B';
+                if (avg >= 70) return 'C';
+                if (avg >= 60) return 'D';
+                if (avg >= 50) return 'E';
+                return 'F';
+            }
+
+            getStatus() {
+                const avg = this.calculateAverage();
+                if (avg >= 50 && this.attendance >= 75) {
+                    return "ناجح";
+                } else {
+                    return "يحتاج مراجعة";
+                }
+            }
+        }
+
+        const studentsList = [
+            new Student(1, "شهد احمد", [85, 90, 88], 80),
+            new Student(2, "احمد محمد ", [42, 45, 44], 85), 
+            new Student(3, "سيليا احمد ", [70, 65, 75], 60), 
+            new Student(4, "شاهنده محمود", [46, 48, 43], 90)  
+        ];
+
+        // عنصر الـ div في الصفحة لعرض النتائج
+        const outputDiv = document.getElementById("output");
+
+        let htmlContent = "<h2>=== تقرير الطلاب الرئيسي ===</h2>";
+        
+        studentsList.forEach(student => {
+            htmlContent += `<div class="box">الاسم: ${student.name} | المتوسط: ${student.calculateAverage().toFixed(2)} | التقدير: ${student.getGradeLetter()} | النتيجة: ${student.getStatus()}</div>`;
+        });
+
+        // الاستخراج (filter)
+        const strugglingStudents = studentsList.filter(student => {
+            const avg = student.calculateAverage();
+            return avg >= 40 && avg <= 49;
+        });
+
+        // المعالجة (map)
+        const upgradedGrades = strugglingStudents.map(student => {
+            return student.calculateAverage() + 5;
+        });
+
+        // التحليل (reduce)
+        const totalUpgraded = upgradedGrades.reduce((sum, grade) => sum + grade, 0);
+
+        let upgradedAverage = 0;
+        if (strugglingStudents.length > 0) {
+            upgradedAverage = totalUpgraded / strugglingStudents.length;
+        }
+
+        htmlContent += "<h2>=== مصفوفة الطلاب المتعثرين (الرأفة) ===</h2>";
+        strugglingStudents.forEach(st => {
+            htmlContent += `<div class="box">الطالب المتعثر: ${st.name} | المتوسط القديم: ${st.calculateAverage().toFixed(2)}</div>`;
+        });
+
+        htmlContent += `<h2>متوسط درجات الطلاب المتعثرين بعد الرأفة: ${upgradedAverage.toFixed(2)}</h2>`;
+
+        // حقن النتائج داخل الصفحة لتظهر أمامك مباشرة
+        outputDiv.innerHTML = htmlContent;
+    </script>
+</body>
+</html>
